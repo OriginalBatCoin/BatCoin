@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 Litecoin Developers
-// Copyright (c) 2013 LottoCoin Developers
+// Copyright (c) 2013 BatCoin Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -295,14 +295,14 @@ void ThreadIRCSeed2(void* parg)
         }
         
         if (fTestNet) {
-            Send(hSocket, "JOIN #lottocoinTEST3\r");
-            Send(hSocket, "WHO #lottocoinTEST3\r");
+            Send(hSocket, "JOIN #BatCoinTEST3\r");
+            Send(hSocket, "WHO #BatCoinTEST3\r");
         } else {
-            // randomly join #lottocoin00-#lottocoin99
+            // randomly join #BatCoin00-#BatCoin99
             int channel_number = GetRandInt(100);
-            channel_number = 0; // LottoCoin: for now, just use one channel
-            Send(hSocket, strprintf("JOIN #lottocoin%02d\r", channel_number).c_str());
-            Send(hSocket, strprintf("WHO #lottocoin%02d\r", channel_number).c_str());
+            channel_number = 0; // BatCoin: for now, just use one channel
+            Send(hSocket, strprintf("JOIN #BatCoin%02d\r", channel_number).c_str());
+            Send(hSocket, strprintf("WHO #BatCoin%02d\r", channel_number).c_str());
         }
 
         int64 nStart = GetTime();

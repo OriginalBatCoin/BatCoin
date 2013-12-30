@@ -66,7 +66,7 @@ OBJS= \
     obj/noui.o
 
 
-all: lottocoind.exe
+all: BatCoind.exe
 
 obj/scrypt.o: scrypt.c
 	gcc -c $(CFLAGS) -o $@ $^
@@ -74,7 +74,7 @@ obj/scrypt.o: scrypt.c
 obj/%.o: %.cpp $(HEADERS)
 	g++ -c $(CFLAGS) -o $@ $<
 
-lottocoind.exe: $(OBJS:obj/%=obj/%)
+BatCoind.exe: $(OBJS:obj/%=obj/%)
 	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
@@ -82,11 +82,11 @@ TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 obj-test/%.o: test/%.cpp $(HEADERS)
 	g++ -c $(TESTDEFS) $(CFLAGS) -o $@ $<
 
-test_lottocoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
+test_BatCoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework-mgw45-mt-d-1_54 $(LIBS)
 
 clean:
-	rm -f lottocoind.exe test_lottocoin.exe
+	rm -f BatCoind.exe test_BatCoin.exe
 	rm -f obj/*.o
 	rm -f obj-test/*.o
 	rm -f build.h

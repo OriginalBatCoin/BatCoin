@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 Litecoin Developers
-// Copyright (c) 2013 LottoCoin Developers
+// Copyright (c) 2013 BatCoin Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_MAIN_H
@@ -35,7 +35,7 @@ static const unsigned int MAX_TX_COMMENT_LEN = 140; // Florincoin: 128 bytes + l
 
 static const int64 MIN_TX_FEE = 1000000;
 static const int64 MIN_RELAY_TX_FEE = MIN_TX_FEE;
-static const int64 MAX_MONEY = 19000000000 * COIN; // LottoCoin: maximum of 19B coins
+static const int64 MAX_MONEY = 19000000000 * COIN; // BatCoin: maximum of 19B coins
 static const int64 CIRCULATION_MONEY = MAX_MONEY;
 static const double TAX_PERCENTAGE = 0.02;
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
@@ -534,7 +534,7 @@ public:
     {
         // Large (in bytes) low-priority (new, small-coin) transactions
         // need a fee.
-        return dPriority > COIN * 2880 / 250; // LottoCoin: 2880 blocks found a day. Priority cutoff is 1 lottocoin day / 250 bytes.
+        return dPriority > COIN * 2880 / 250; // BatCoin: 2880 blocks found a day. Priority cutoff is 1 BatCoin day / 250 bytes.
     }
 
     int64 GetMinFee(unsigned int nBlockSize=1, bool fAllowFree=true, enum GetMinFee_mode mode=GMF_BLOCK) const

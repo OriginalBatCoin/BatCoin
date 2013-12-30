@@ -1,4 +1,4 @@
-LottoCoin, a p2p crypto coin based on scrypt PoW, provides random coins per block. Initially it generates a random number of coins, between 256 coins and 65536 (256*256) coins, per block. In addition, it generates randomly superblocks on per hourly basis (131072 coins per block), semi-daily (262144 coins per block) and daily super lotto (528244 coins per block). LottoCoin is a great cyber crypto coin for games. LottoCoin has a total of about 18,302,526,336 coins. It is a descendant of Litecoin with random block features. 
+BatCoin, a p2p crypto coin based on scrypt PoW, provides random coins per block. Initially it generates a random number of coins, between 256 coins and 65536 (256*256) coins, per block. In addition, it generates randomly superblocks on per hourly basis (131072 coins per block), semi-daily (262144 coins per block) and daily super lotto (528244 coins per block). BatCoin is a great cyber crypto coin for games. BatCoin has a total of about 18,302,526,336 coins. It is a descendant of Litecoin with random block features. 
 
 Features:
 	- 30 seconds block time
