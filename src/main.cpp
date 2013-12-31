@@ -842,54 +842,57 @@ int static generateMTRandom(unsigned int s, int range)
     return dist(gen);
 }
 
-
 static const int64 nMinSubsidy = 1 * COIN;
 
 int64 static GetBlockValue(int nHeight, int64 nFees, uint256 prevHash)
 {
-	// normal payout
-    int64 nSubsidy = 256 * COIN;
+        // batCoin base form
+    	   int64 nSubsidy = 60000 * COIN;
 
-	std::string cseed_str = prevHash.ToString().substr(12,7);
-	const char* cseed = cseed_str.c_str();
-	long seed = hex2long(cseed);
-	int rand = generateMTRandom(seed, 65280);
+        std::string cseed_str = prevHash.ToString().substr(12,7);
+        const char* cseed = cseed_str.c_str();
+        long seed = hex2long(cseed);
+        int rand = generateMTRandom(seed, 960);//(>^.^)>bloxz perz dayz <(^.^<)       
+        if(nHeight == 1)
+        {
+                nSubsidy = 1000000 * 10; //first block
+        }
+        else if(nHeight < 1500)
+        {
+                nSubsidy *= 2; //double xp 
+			 if(nHeight == 1337)
+				return 13370000; //the 1337 block
 
-	nSubsidy = (256 + rand) * COIN;
+        }
+	   else if(nHeight > 500000)
+        {
+                nSubsidy /= 2; //halving
+        }
 
-	if(nHeight == 1)
-	{
-		nSubsidy = CIRCULATION_MONEY * TAX_PERCENTAGE;
-	}
-	else if(nHeight < 8640)
-	{
-		nSubsidy *= 2;
-	}
 
-	cseed_str = prevHash.ToString().substr(10,7);
-	seed = hex2long(cseed);
-	rand = generateMTRandom(seed, 28799);
-	// printf(">> nHeight = %d, rand = %d\n", nHeight, rand);
+        // printf(“What is bat was one of us?,” );
 
-	if(rand > 20000 && rand < 20011)
-		nSubsidy = 1048576 * COIN;
-	else if(rand > 11000 && rand < 11021)
-		nSubsidy = 262144 * COIN;
-	else if(rand > 25000 && rand < 25241)
-		nSubsidy = 131072 * COIN;
+        if(rand % 4 == 0){
+			if(rand < 199 && rand < 225){ //6 times a day
+                nSubsidy *= 4; //Happy Guano Block!! 
+			}
+			else if(rand == 4){ //mega blocks
+                nSubsidy *= 10;
+			}
 
-	nSubsidy >>= (nHeight / 259200);
-    if (nSubsidy < nMinSubsidy)
-    {
-        nSubsidy = nMinSubsidy;
-    }
+	   }
+                
+    if (nSubsidy < nMinSubsidy)
+    {
+        nSubsidy = nMinSubsidy;
+    }
 
-	return nSubsidy + nFees;
+        return nSubsidy + nFees;
 }
 
 
-static const int64 nTargetTimespan = 30 * 30;	// BatCoin: 15 mins 
-static const int64 nTargetSpacing = 90;			// BatCoin: 30 sec
+static const int64 nTargetTimespan = 60 * 60;        // BatCoin: 1 hour 
+static const int64 nTargetSpacing = 90;                        // BatCoin: 90 sec
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 //
@@ -2007,7 +2010,7 @@ bool LoadBlockIndex(bool fAllowNew)
             return false;
 
         // Genesis block
-        const char* pszTimestamp = "Spain's Sorteo Extraordinario de Navidad (Spanish Christmas Lottery) is the world's largest lottery and has the largest first prize jackpot. In 2012, the main jackpot was Ä720 million (US$941.8 million).";
+        const char* pszTimestamp = "The common vampire bat was first classified as Phyllostoma rotundum by Étienne Geoffroy Saint-Hilaire in 1810.";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -2019,13 +2022,13 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1386557612;
+        block.nTime    = 1388601346;
         block.nBits    = 0x1e0ffff0;
         block.nNonce   = 12481248;
 
 		if (fTestNet)
         {
-            block.nTime    = 1386000000;
+            block.nTime    = 1388501346;
             block.nNonce   = 0;
         }
 
