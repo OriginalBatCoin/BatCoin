@@ -1,7 +1,6 @@
-
 TEMPLATE = app
 TARGET =
-VERSION = 0.6.3
+VERSION = 1.0.0
 INCLUDEPATH += src src/json src/qt
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6
 CONFIG += no_include_pwd
@@ -15,9 +14,17 @@ CONFIG += no_include_pwd
 # Dependency library locations can be customized with:
 #    BOOST_INCLUDE_PATH, BOOST_LIB_PATH, BDB_INCLUDE_PATH,
 #    BDB_LIB_PATH, OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
-# Change following your build environment
-# I am using mingw to build
 
+windows {
+    BOOST_INCLUDE_PATH=C:/deps/boost
+    BOOST_LIB_PATH=C:/deps/boost/stage/lib
+    BDB_INCLUDE_PATH=C:/deps/db/build_unix
+    BDB_LIB_PATH=C:/deps/db/build_unix
+    OPENSSL_INCLUDE_PATH=C:/deps/ssl/include
+    OPENSSL_LIB_PATH=C:/deps/ssl
+    MINIUPNPC_INCLUDE_PATH=C:/deps
+    MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
+}
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -26,9 +33,9 @@ UI_DIR = build
 # use: qmake "RELEASE=1"
 contains(RELEASE, 1) {
     # Mac: compile for maximum compatibility (10.5, 32-bit)
-    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
-    macx:QMAKE_CFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
-    macx:QMAKE_LFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
+    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -fpermissive
+    macx:QMAKE_CFLAGS += -mmacosx-version-min=10.5 -fpermissive
+    macx:QMAKE_LFLAGS += -mmacosx-version-min=10.5 -fpermissive
 
     !windows:!macx {
         # Linux: static link
@@ -96,7 +103,7 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
     DEFINES += HAVE_BUILD_INFO
 }
 
-QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter  -D__NO_SYSTEM_INCLUDES
+QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter
 
 # Input
 DEPENDPATH += src src/json src/qt
@@ -169,7 +176,7 @@ HEADERS += src/qt/bitcoingui.h \
     src/scrypt.h \
     src/qt/miningpage.h \
     src/version.h \
-    src/qt/rpcconsole.h
+    src/qt/rpcconsole.h 
 
 SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/transactiontablemodel.cpp \
@@ -230,7 +237,7 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/rpcconsole.cpp \
     src/scrypt.c \
     src/qt/miningpage.cpp \
-    src/noui.cpp
+    src/noui.cpp \
 
 RESOURCES += \
     src/qt/bitcoin.qrc
@@ -292,7 +299,7 @@ OTHER_FILES += \
 # platform specific defaults, if not overridden on command line
 isEmpty(BOOST_LIB_SUFFIX) {
     macx:BOOST_LIB_SUFFIX = -mt
-    windows:BOOST_LIB_SUFFIX = -mgw45-mt-d-1_53
+    windows:BOOST_LIB_SUFFIX = -mgw46-mt-1_54
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
@@ -319,8 +326,8 @@ isEmpty(BOOST_INCLUDE_PATH) {
     macx:BOOST_INCLUDE_PATH = /opt/local/include
 }
 
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock
-windows:DEFINES += WIN32
+windows:LIBS += -lshlwapi
+windows:DEFINES += WIN32 __NO_SYSTEM_INCLUDES
 windows:RC_FILE = src/qt/res/bitcoin-qt.rc
 
 windows:!contains(MINGW_THREAD_BUGFIX, 0) {
@@ -349,11 +356,9 @@ macx:TARGET = "BatCoin-Qt"
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
 INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -loleaut32
+LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 # -lgdi32 has to happen after -lcrypto (see  #681)
-windows:LIBS += -lole32 -luuid -lgdi32 
-LIBS += E:\MinGW\lib\libws2_32.a
-LIBS += E:\MinGW\lib\liboleaut32.a
+windows:LIBS += -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 
 contains(RELEASE, 1) {
@@ -364,5 +369,4 @@ contains(RELEASE, 1) {
 }
 
 system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
-
 
