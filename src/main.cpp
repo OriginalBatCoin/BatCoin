@@ -33,7 +33,7 @@ unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
 
-uint256 hashGenesisBlock("0xb5e96fe67d096f7cde17ecbf087e449b038fb35761d556e9571d6e8ab82c21d6");
+uint256 hashGenesisBlock("0x0319836c6a164863145587fe05aec40ec77060770394ab244a35dff8163cfd5a");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // BatCoin: starting difficulty is 1 / 2^12
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
@@ -1978,13 +1978,13 @@ FILE* AppendBlockFile(unsigned int& nFileRet)
 
 bool LoadBlockIndex(bool fAllowNew)
 {
-   if (fTestNet)
+    if (fTestNet)
     {
         pchMessageStart[0] = 0xfb;
         pchMessageStart[1] = 0xc0;
         pchMessageStart[2] = 0xb8;
         pchMessageStart[3] = 0xdb;
-        hashGenesisBlock = uint256("0x0c403e90c708622aac993f7b9ff16e7626d576e32bf852e556337a1fc928546d");
+        hashGenesisBlock = uint256("0x0319836c6a164863145587fe05aec40ec77060770394ab244a35dff8163cfd5a");
     }
 
     //
@@ -2016,7 +2016,7 @@ bool LoadBlockIndex(bool fAllowNew)
 	// vMerkleTree: 5a2e19825b
         
         // Genesis block
-        const char* pszTimestamp = "todo: replace with something that ensures no premining took place";
+        const char* pszTimestamp = "batman first appeared in 1939,and since than he appeared in more than 100,000 issues";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -2028,21 +2028,21 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1388603331;
+        block.nTime    = 1388609578;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 2319396442;
+        block.nNonce   = 2085320002;
 
         if (fTestNet)
         {
-            block.nTime    = 1388603331;
-            block.nNonce   = 349442911;
+            block.nTime    = 1388609578;
+            block.nNonce   = 386402991;
         }
 
         //// debug print
         printf("%s\n", block.GetHash().ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x990ae5d85c6eebc93658b0abbab72991661aa9f73b75d0c875bd920512c566a5"));
+        assert(block.hashMerkleRoot == uint256("0x8006c79584eb9fc27155173e6a454049dd439920c746b6f29c55743d1e6db49e"));
 
         // If genesis block hash does not match, then generate new genesis hash.
         if (false && block.GetHash() != hashGenesisBlock)
@@ -2089,7 +2089,6 @@ bool LoadBlockIndex(bool fAllowNew)
 
     return true;
 }
-
 
 
 void PrintBlockTree()
