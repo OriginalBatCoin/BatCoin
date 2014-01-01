@@ -35,7 +35,7 @@ static const unsigned int MAX_TX_COMMENT_LEN = 140; // Florincoin: 128 bytes + l
 
 static const int64 MIN_TX_FEE = 1000000;
 static const int64 MIN_RELAY_TX_FEE = MIN_TX_FEE;
-static const int64 MAX_MONEY = 98500000000 * COIN; // BatCoin: maximum of 98,5B coins
+static const  int64 MAX_MONEY = 91000000000 * COIN; // BatCoin: maximum of 98 Billion coins
 static const int64 CIRCULATION_MONEY = MAX_MONEY;
 static const double TAX_PERCENTAGE = 0.02;
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
@@ -534,7 +534,7 @@ public:
     {
         // Large (in bytes) low-priority (new, small-coin) transactions
         // need a fee.
-        return dPriority > COIN * 1440 / 250; // BatCoin: 2880 blocks found a day. Priority cutoff is 1 BatCoin day / 250 bytes.
+        return dPriority > COIN * 960 / 250; // BatCoin: 960 blocks found a day. Priority cutoff is 1 BatCoin day / 250 bytes.
     }
 
     int64 GetMinFee(unsigned int nBlockSize=1, bool fAllowFree=true, enum GetMinFee_mode mode=GMF_BLOCK) const

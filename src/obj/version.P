@@ -1,0 +1,6 @@
+obj/version.o: version.cpp \
+  /Users/donatekikorose/Desktop/BatCoin/src/version.h \
+  /Users/donatekikorose/Desktop/BatCoin/src/obj/build.h
+version.cpp :
+  /Users/donatekikorose/Desktop/BatCoin/src/version.h :
+  /Users/donatekikorose/Desktop/BatCoin/src/obj/build.h :

@@ -846,53 +846,47 @@ static const int64 nMinSubsidy = 1 * COIN;
 
 int64 static GetBlockValue(int nHeight, int64 nFees, uint256 prevHash)
 {
-        // batCoin base form
-    	   int64 nSubsidy = 60000 * COIN;
+	int64 nSubsidy = 60000 * COIN; // batCoin base form
+	std::string cseed_str = prevHash.ToString().substr(12,7);
+	const char* cseed = cseed_str.c_str();
+	long seed = hex2long(cseed);
+	int rand = generateMTRandom(seed, 960);//     random seed
+	if(nHeight == 1)
+	{
+		nSubsidy = 1000000 * 10; //first block
+	}
+	else if(nHeight < 1500)
+	{
+		nSubsidy *= 2; //double xp 
+	if(nHeight == 1337)
+		return 13370000; //the 1337 block
 
-        std::string cseed_str = prevHash.ToString().substr(12,7);
-        const char* cseed = cseed_str.c_str();
-        long seed = hex2long(cseed);
-        int rand = generateMTRandom(seed, 960);//(>^.^)>bloxz perz dayz <(^.^<)       
-        if(nHeight == 1)
-        {
-                nSubsidy = 1000000 * 10; //first block
-        }
-        else if(nHeight < 1500)
-        {
-                nSubsidy *= 2; //double xp 
-			 if(nHeight == 1337)
-				return 13370000; //the 1337 block
-
-        }
-	   else if(nHeight > 500000)
-        {
-                nSubsidy /= 2; //halving
-        }
-
-
-        // printf(“What is bat was one of us?,” );
-
-        if(rand % 4 == 0){
+	}
+	else if(nHeight > 500000)
+	{
+		nSubsidy /= 2; //halving
+	}
+	// printf(“What is bat was one of us?,” );
+	
+		if(rand % 4 == 0){
 			if(rand < 199 && rand < 225){ //6 times a day
-                nSubsidy *= 4; //Happy Guano Block!! 
+				nSubsidy *= 4; //Happy Guano Block!! 
 			}
 			else if(rand == 4){ //mega blocks
-                nSubsidy *= 10;
+				nSubsidy *= 10;
 			}
 
-	   }
-                
-    if (nSubsidy < nMinSubsidy)
-    {
-        nSubsidy = nMinSubsidy;
-    }
-
-        return nSubsidy + nFees;
+		}
+		if (nSubsidy < nMinSubsidy)
+		{
+			nSubsidy = nMinSubsidy;
+		}
+		return nSubsidy + nFees;
 }
 
 
-static const int64 nTargetTimespan = 60 * 60;        // BatCoin: 1 hour 
-static const int64 nTargetSpacing = 90;                        // BatCoin: 90 sec
+static const int64 nTargetTimespan = 60 * 60;// BatCoin: 1 hour 
+static const int64 nTargetSpacing = 90;// BatCoin: 90 sec
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 //
@@ -1984,13 +1978,13 @@ FILE* AppendBlockFile(unsigned int& nFileRet)
 
 bool LoadBlockIndex(bool fAllowNew)
 {
-    if (fTestNet)
+   if (fTestNet)
     {
-        pchMessageStart[0] = 0xfd;
-        pchMessageStart[1] = 0xc3;
-        pchMessageStart[2] = 0xb6;
-        pchMessageStart[3] = 0xf1;
-        hashGenesisBlock = uint256("0xe7733206db37636e6a900ab775bc586b9f56be0c92710e35b132c5c157f4ce74");
+        pchMessageStart[0] = 0xfb;
+        pchMessageStart[1] = 0xc0;
+        pchMessageStart[2] = 0xb8;
+        pchMessageStart[3] = 0xdb;
+        hashGenesisBlock = uint256("0x0c403e90c708622aac993f7b9ff16e7626d576e32bf852e556337a1fc928546d");
     }
 
     //
@@ -2008,34 +2002,78 @@ bool LoadBlockIndex(bool fAllowNew)
     {
         if (!fAllowNew)
             return false;
-
+    
+	// Genesis block:
+	// block.nTime = 1366559428 
+	// block.nNonce = 2085386442 
+	// block.GetHash = 384b060671f4a93948e9c168216dadb0ca2fbc54aa11c86b0345b6af1c59b2f5
+	// CBlock(hash=384b060671f4a93948e9, PoW=00000951e146b0026411, ver=1,
+	//  hashPrevBlock=00000000000000000000, hashMerkleRoot=5a2e19825b,
+	//  nTime=1366559428, nBits=1e0ffff0, nNonce=2085386442, vtx=1)
+	// CTransaction(hash=5a2e19825b, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+	// CTxIn(COutPoint(0000000000, -1), coinbase 04ffff001d010441746f646f3a207265706c616365207769746820736f6d657468696e67207468617420656e7375726573206e6f207072656d696e696e6720746f6f6b20706c616365)
+	// CTxOut(error)
+	// vMerkleTree: 5a2e19825b
+        
         // Genesis block
-        const char* pszTimestamp = "The common vampire bat was first classified as Phyllostoma rotundum by Étienne Geoffroy Saint-Hilaire in 1810.";
+        const char* pszTimestamp = "todo: replace with something that ensures no premining took place";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 0 * COIN;
-        txNew.vout[0].scriptPubKey = CScript() << ParseHex("0440012340012340012340012340012343444555666777888999000000aaaaabbbbbcccccdddddeeeeeff00ff00ff00ff001234567890abcdef0022446688abc89") << OP_CHECKSIG;
+        txNew.vout[0].nValue = 0;
+        txNew.vout[0].scriptPubKey = CScript() << 0x0 << OP_CHECKSIG; // a privkey for that 'vanity' pubkey would be interesting ;)
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1388601346;
+        block.nTime    = 1388603331;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 12481248;
+        block.nNonce   = 2319396442;
 
-		if (fTestNet)
+        if (fTestNet)
         {
-            block.nTime    = 1388501346;
-            block.nNonce   = 0;
+            block.nTime    = 1388603331;
+            block.nNonce   = 349442911;
         }
 
         //// debug print
-        printf("block.GetHash() = %s\n", block.GetHash().ToString().c_str());
-        printf("block.hashMerkleRoot = %s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x1b9c886c8301d548b60a36c15ee02afccc4c88538ba5406166a78dc5fe65e1bc"));
+        printf("%s\n", block.GetHash().ToString().c_str());
+        printf("%s\n", hashGenesisBlock.ToString().c_str());
+        printf("%s\n", block.hashMerkleRoot.ToString().c_str());
+        assert(block.hashMerkleRoot == uint256("0x990ae5d85c6eebc93658b0abbab72991661aa9f73b75d0c875bd920512c566a5"));
+
+        // If genesis block hash does not match, then generate new genesis hash.
+        if (false && block.GetHash() != hashGenesisBlock)
+        {
+            printf("Searching for genesis block...\n");
+            // This will figure out a valid hash and Nonce if you're
+            // creating a different genesis block:
+            uint256 hashTarget = CBigNum().SetCompact(block.nBits).getuint256();
+            uint256 thash;
+            char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
+
+            loop
+            {
+                scrypt_1024_1_1_256_sp(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
+                if (thash <= hashTarget)
+                    break;
+                if ((block.nNonce & 0xFFF) == 0)
+                {
+                    printf("nonce %08X: hash = %s (target = %s)\n", block.nNonce, thash.ToString().c_str(), hashTarget.ToString().c_str());
+                }
+                ++block.nNonce;
+                if (block.nNonce == 0)
+                {
+                    printf("NONCE WRAPPED, incrementing time\n");
+                    ++block.nTime;
+                }
+            }
+            printf("block.nTime = %u \n", block.nTime);
+            printf("block.nNonce = %u \n", block.nNonce);
+            printf("block.GetHash = %s\n", block.GetHash().ToString().c_str());
+        }
 
         block.print();
         assert(block.GetHash() == hashGenesisBlock);
