@@ -97,7 +97,7 @@ void ipcInit()
                 break;
         }
 
-        // Make sure only one BatCoin instance is listening
+        // Make sure only one instance is listening
         message_queue::remove(BITCOINURI_QUEUE_NAME);
         delete mq;
 

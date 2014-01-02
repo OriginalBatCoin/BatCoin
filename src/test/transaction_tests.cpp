@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(test_Get)
     BOOST_CHECK(t1.AreInputsStandard(dummyInputs));
     BOOST_CHECK_EQUAL(t1.GetValueIn(dummyInputs), (50+21+22)*CENT);
 
-    // Adding extra stuff to the scriptSig should make it non-standard:
+    // Adding extra junk to the scriptSig should make it non-standard:
     t1.vin[0].scriptSig << OP_11;
     BOOST_CHECK(!t1.AreInputsStandard(dummyInputs));
 

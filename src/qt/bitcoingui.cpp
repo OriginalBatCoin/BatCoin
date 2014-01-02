@@ -3,8 +3,7 @@
  *
  * W.J. van der Laan 2011-2012
  * The Bitcoin Developers 2011-2012
- * The Litecoin Developers 2011-2013
- * The BatCoin Developers 2013
+ * The Litecoin Developers 201-2013
  */
 #include "bitcoingui.h"
 #include "transactiontablemodel.h"
@@ -623,12 +622,12 @@ void BitcoinGUI::setMining(bool mining, int hashrate)
     if (mining)
     {
         labelMiningIcon->setPixmap(QIcon(":/icons/mining_active").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-        labelMiningIcon->setToolTip(tr("Mining BatCoins at %1 hashes per second").arg(hashrate));
+        labelMiningIcon->setToolTip(tr("Mining BatCoin at %1 hashes per second").arg(hashrate));
     }
     else
     {
         labelMiningIcon->setPixmap(QIcon(":/icons/mining_inactive").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-        labelMiningIcon->setToolTip(tr("Not mining BatCoins"));
+        labelMiningIcon->setToolTip(tr("Not mining BatCoin"));
     }
 }
 

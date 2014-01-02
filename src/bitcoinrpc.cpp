@@ -1,8 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 The Litecoin Developers
-// Copyright (c) 2013 Florincoin developers
-// Copyright (c) 2013 BatCoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -138,7 +136,7 @@ double GetDifficulty(const CBlockIndex* blockindex = NULL)
 int64 AmountFromValue(const Value& value)
 {
     double dAmount = value.get_real();
-    if (dAmount <= 0.0 || dAmount > 19000000000.0)
+    if (dAmount <= 0.0 || dAmount > 84000000.0)
         throw JSONRPCError(-3, "Invalid amount");
     int64 nAmount = roundint64(dAmount * COIN);
     if (!MoneyRange(nAmount))
@@ -188,7 +186,6 @@ void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
     }
     entry.push_back(Pair("txid", wtx.GetHash().GetHex()));
     entry.push_back(Pair("time", (boost::int64_t)wtx.GetTxTime()));
-	entry.push_back(Pair("tx-comment", wtx.strTxComment));
     BOOST_FOREACH(const PAIRTYPE(string,string)& item, wtx.mapValue)
         entry.push_back(Pair(item.first, item.second));
 }
@@ -544,7 +541,7 @@ Value setaccount(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "setaccount <BatCoinaddress> <account>\n"
+            "setaccount <BatCoin address> <account>\n"
             "Sets the account associated with the given address.");
 
     CBitcoinAddress address(params[0].get_str());
@@ -574,7 +571,7 @@ Value getaccount(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "getaccount <BatCoinaddress>\n"
+            "getaccount <BatCoin address>\n"
             "Returns the account associated with the given address.");
 
     CBitcoinAddress address(params[0].get_str());
@@ -644,9 +641,9 @@ Value setmininput(const Array& params, bool fHelp)
 
 Value sendtoaddress(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 2 || params.size() > 5)
+    if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-            "sendtoaddress <BatCoinaddress> <amount> [comment] [comment-to] [tx-comment]\n"
+            "sendtoaddress <BatCoin address> <amount> [comment] [comment-to]\n"
             "<amount> is a real and is rounded to the nearest 0.00000001"
             + HelpRequiringPassphrase());
 
@@ -663,20 +660,11 @@ Value sendtoaddress(const Array& params, bool fHelp)
         wtx.mapValue["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["to"]      = params[3].get_str();
-		
-    // Transaction comment
-	std::string txcomment;
-    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-	{
-        txcomment = params[4].get_str();
-		if (txcomment.length() > MAX_TX_COMMENT_LEN)
-			txcomment.resize(MAX_TX_COMMENT_LEN);
-	}
 
     if (pwalletMain->IsLocked())
         throw JSONRPCError(-13, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
-    string strError = pwalletMain->SendMoneyToDestination(address.Get(), nAmount, wtx, false, txcomment);
+    string strError = pwalletMain->SendMoneyToDestination(address.Get(), nAmount, wtx);
     if (strError != "")
         throw JSONRPCError(-4, strError);
 
@@ -687,7 +675,7 @@ Value signmessage(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
-            "signmessage <BatCoinaddress> <message>\n"
+            "signmessage <BatCoin address> <message>\n"
             "Sign a message with the private key of an address");
 
     EnsureWalletIsUnlocked();
@@ -722,7 +710,7 @@ Value verifymessage(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 3)
         throw runtime_error(
-            "verifymessage <BatCoinaddress> <signature> <message>\n"
+            "verifymessage <BatCoin address> <signature> <message>\n"
             "Verify a signed message");
 
     string strAddress  = params[0].get_str();
@@ -759,8 +747,8 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getreceivedbyaddress <BatCoinaddress> [minconf=1]\n"
-            "Returns the total amount received by <BatCoinaddress> in transactions with at least [minconf] confirmations.");
+            "getreceivedbyaddress <BatCoin address> [minconf=1]\n"
+            "Returns the total amount received by <BatCoin address> in transactions with at least [minconf] confirmations.");
 
     // BatCoin address
     CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
@@ -978,9 +966,9 @@ Value movecmd(const Array& params, bool fHelp)
 
 Value sendfrom(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 3 || params.size() > 7)
+    if (fHelp || params.size() < 3 || params.size() > 6)
         throw runtime_error(
-            "sendfrom <fromaccount> <toBatCoinaddress> <amount> [minconf=1] [comment] [comment-to] [tx-comment]\n"
+            "sendfrom <fromaccount> <to BatCoin address> <amount> [minconf=1] [comment] [comment-to]\n"
             "<amount> is a real and is rounded to the nearest 0.00000001"
             + HelpRequiringPassphrase());
 
@@ -999,13 +987,6 @@ Value sendfrom(const Array& params, bool fHelp)
         wtx.mapValue["comment"] = params[4].get_str();
     if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
         wtx.mapValue["to"]      = params[5].get_str();
-	std::string txcomment;
-    if (params.size() > 6 && params[6].type() != null_type && !params[6].get_str().empty())
-	{
-        txcomment = params[6].get_str();
-		if (txcomment.length() > MAX_TX_COMMENT_LEN)
-			txcomment.resize(MAX_TX_COMMENT_LEN);
-	}
 
     EnsureWalletIsUnlocked();
 
@@ -1015,7 +996,7 @@ Value sendfrom(const Array& params, bool fHelp)
         throw JSONRPCError(-6, "Account has insufficient funds");
 
     // Send
-    string strError = pwalletMain->SendMoneyToDestination(address.Get(), nAmount, wtx, false, txcomment);
+    string strError = pwalletMain->SendMoneyToDestination(address.Get(), nAmount, wtx);
     if (strError != "")
         throw JSONRPCError(-4, strError);
 
@@ -1025,9 +1006,9 @@ Value sendfrom(const Array& params, bool fHelp)
 
 Value sendmany(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 2 || params.size() > 5)
+    if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-            "sendmany <fromaccount> {address:amount,...} [minconf=1] [comment] [tx-comment]\n"
+            "sendmany <fromaccount> {address:amount,...} [minconf=1] [comment]\n"
             "amounts are double-precision floating point numbers"
             + HelpRequiringPassphrase());
 
@@ -1038,13 +1019,9 @@ Value sendmany(const Array& params, bool fHelp)
         nMinDepth = params[2].get_int();
 
     CWalletTx wtx;
-	std::string strTxComment;
-	
     wtx.strFromAccount = strAccount;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["comment"] = params[3].get_str();
-    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-        strTxComment = params[4].get_str();
 
     set<CBitcoinAddress> setAddress;
     vector<pair<CScript, int64> > vecSend;
@@ -1078,7 +1055,7 @@ Value sendmany(const Array& params, bool fHelp)
     // Send
     CReserveKey keyChange(pwalletMain);
     int64 nFeeRequired = 0;
-    bool fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange, nFeeRequired, strTxComment);
+    bool fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange, nFeeRequired);
     if (!fCreated)
     {
         if (totalAmount + nFeeRequired > pwalletMain->GetBalance())
@@ -1855,8 +1832,8 @@ Value validateaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "validateaddress <BatCoinaddress>\n"
-            "Return information about <BatCoinaddress>.");
+            "validateaddress <BatCoin address>\n"
+            "Return information about <BatCoin address>.");
 
     CBitcoinAddress address(params[0].get_str());
     bool isValid = address.IsValid();
@@ -1889,10 +1866,10 @@ Value getworkex(const Array& params, bool fHelp)
         );
 
     if (vNodes.empty())
-        throw JSONRPCError(-9, "BatCoin is not connected!");
+        throw JSONRPCError(-9, "BatCoin server is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(-10, "BatCoin is downloading blocks...");
+        throw JSONRPCError(-10, "BatCoin server is downloading blocks...");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;
@@ -2021,10 +1998,10 @@ Value getwork(const Array& params, bool fHelp)
             "If [data] is specified, tries to solve the block and returns true if it was successful.");
 
     if (vNodes.empty())
-        throw JSONRPCError(-9, "BatCoin is not connected!");
+        throw JSONRPCError(-9, "BatCoin server is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(-10, "BatCoin is downloading blocks...");
+        throw JSONRPCError(-10, "BatCoin server is downloading blocks...");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;    // FIXME: thread safety
@@ -2084,7 +2061,7 @@ Value getwork(const Array& params, bool fHelp)
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
         result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
-        result.push_back(Pair("algorithm", "scrypt:1024,1,1"));  // Litecoin: specify that we should use the scrypt algorithm
+        result.push_back(Pair("algorithm", "scrypt:1024,1,1"));  // specify that we should use the scrypt algorithm
         return result;
     }
     else
@@ -2153,10 +2130,10 @@ Value getblocktemplate(const Array& params, bool fHelp)
     if (strMode == "template")
     {
         if (vNodes.empty())
-            throw JSONRPCError(-9, "BatCoin is not connected!");
+            throw JSONRPCError(-9, "BatCoin server is not connected!");
 
         if (IsInitialBlockDownload())
-            throw JSONRPCError(-10, "BatCoin is downloading blocks...");
+            throw JSONRPCError(-10, "BatCoin server is downloading blocks...");
 
         static CReserveKey reservekey(pwalletMain);
 
@@ -2866,7 +2843,7 @@ void ThreadRPCServer2(void* parg)
     {
         unsigned char rand_pwd[32];
         RAND_bytes(rand_pwd, 32);
-        string strWhatAmI = "To use BatCoind";
+        string strWhatAmI = "To use BatCoin";
         if (mapArgs.count("-server"))
             strWhatAmI = strprintf(_("To use the %s option"), "\"-server\"");
         else if (mapArgs.count("-daemon"))

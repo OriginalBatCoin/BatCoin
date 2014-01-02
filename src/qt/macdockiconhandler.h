@@ -7,11 +7,11 @@ class QMenu;
 class QIcon;
 class QWidget;
 
-#ifdef __OBJC__
-@class DockIconClickEventHandler;
-#else
-class DockIconClickEventHandler;
-#endif
+ #ifdef __OBJC__
+ @class DockIconClickEventHandler;
+ #else
+ class DockIconClickEventHandler;
+ #endif
 
 /** Macintosh-specific dock icon handler.
  */

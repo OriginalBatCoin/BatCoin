@@ -1,7 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 Litecoin Developers
-// Copyright (c) 2013 BatCoin Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_MAIN_H
@@ -27,19 +26,23 @@ class CInv;
 class CRequestTracker;
 class CNode;
 
+// This fix should give some protection agains sudden
+// changes of the network hashrate.
+// Thanks: https://bitcointalk.org/index.php?topic=182430.msg1904506#msg1904506
+// activated: after block 15000 for all following diff retargeting events
+#define COINFIX1_BLOCK  (15000)
+
+// for now, we leave the block size at 1 MB, meaning we support roughly 2400 transactions
+// per block, which means about 160 tps
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
 static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
 static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
-static const unsigned int MAX_TX_COMMENT_LEN = 140; // Florincoin: 128 bytes + little extra
-
-static const int64 MIN_TX_FEE = 1000000;
+static const int64 MIN_TX_FEE = 10000000;
 static const int64 MIN_RELAY_TX_FEE = MIN_TX_FEE;
-static const  int64 MAX_MONEY = 91000000000 * COIN; // BatCoin: maximum of 98 Billion coins
-static const int64 CIRCULATION_MONEY = MAX_MONEY;
-static const double TAX_PERCENTAGE = 0.02;
+static const int64 MAX_MONEY = 91000000000 * COIN; // maximum of 91 000 000 000 = 91 BILLION coins
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
-static const int COINBASE_MATURITY = 40;
+static const int COINBASE_MATURITY = 60;
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.
 static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 #ifdef USE_UPNP
@@ -50,6 +53,12 @@ static const int fHaveUPnP = false;
 
 
 extern CScript COINBASE_FLAGS;
+
+
+
+
+
+
 extern CCriticalSection cs_main;
 extern std::map<uint256, CBlockIndex*> mapBlockIndex;
 extern uint256 hashGenesisBlock;
@@ -105,6 +114,17 @@ int GetNumBlocksOfPeers();
 bool IsInitialBlockDownload();
 std::string GetWarnings(std::string strFor);
 bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock);
+
+
+
+
+
+
+
+
+
+
+
 bool GetWalletFile(CWallet* pwallet, std::string &strWalletFileOut);
 
 /** Position on disk for a particular transaction. */
@@ -378,13 +398,11 @@ typedef std::map<uint256, std::pair<CTxIndex, CTransaction> > MapPrevTx;
 class CTransaction
 {
 public:
-    static const int LEGACY_VERSION_1 = 1;
-    static const int CURRENT_VERSION = 2;
+    static const int CURRENT_VERSION=1;
     int nVersion;
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
     unsigned int nLockTime;
-	std::string strTxComment;
 
     // Denial-of-service detection:
     mutable int nDoS;
@@ -402,10 +420,6 @@ public:
         READWRITE(vin);
         READWRITE(vout);
         READWRITE(nLockTime);
-
-		if(this->nVersion > LEGACY_VERSION_1) { 
-        READWRITE(strTxComment); }
-
     )
 
     void SetNull()
@@ -414,7 +428,6 @@ public:
         vin.clear();
         vout.clear();
         nLockTime = 0;
-		strTxComment.clear();
         nDoS = 0;  // Denial-of-service prevention
     }
 
@@ -534,7 +547,7 @@ public:
     {
         // Large (in bytes) low-priority (new, small-coin) transactions
         // need a fee.
-        return dPriority > COIN * 960 / 250; // BatCoin: 960 blocks found a day. Priority cutoff is 1 BatCoin day / 250 bytes.
+        return dPriority > COIN * 960 / 250; // 5760 blocks found a day. Priority cutoff is 1 BAT day / 250 bytes.
     }
 
     int64 GetMinFee(unsigned int nBlockSize=1, bool fAllowFree=true, enum GetMinFee_mode mode=GMF_BLOCK) const
@@ -626,15 +639,12 @@ public:
     std::string ToString() const
     {
         std::string str;
-        str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%d, vout.size=%d, nLockTime=%d, strTxComment=%s)\n",
+        str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%d, vout.size=%d, nLockTime=%d)\n",
             GetHash().ToString().substr(0,10).c_str(),
             nVersion,
             vin.size(),
             vout.size(),
-            nLockTime,
-			strTxComment.substr(0,30).c_str()
-			);
-
+            nLockTime);
         for (unsigned int i = 0; i < vin.size(); i++)
             str += "    " + vin[i].ToString() + "\n";
         for (unsigned int i = 0; i < vout.size(); i++)
@@ -1583,7 +1593,7 @@ public:
     bool CheckSignature()
     {
         CKey key;
-        if (!key.SetPubKey(ParseHex("0440012340012340012340012340012343444555666777888999000000aaaaabbbbbcccccdddddeeeeeff00ff00ff00ff001234567890abcdef0022446688abc89")))
+        if (!key.SetPubKey(ParseHex("040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9")))
             return error("CAlert::CheckSignature() : SetPubKey failed");
         if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
             return error("CAlert::CheckSignature() : verify signature failed");

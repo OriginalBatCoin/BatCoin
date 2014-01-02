@@ -34,9 +34,6 @@
         <file alias="synced">res/icons/synced.png</file>
         <file alias="remove">res/icons/remove.png</file>
         <file alias="tx_mined">res/icons/tx_mined.png</file>
-        <file alias="tx_mined2">res/icons/tx_mined2.png</file>
-        <file alias="tx_mined3">res/icons/tx_mined3.png</file>
-        <file alias="tx_mined4">res/icons/tx_mined4.png</file>
         <file alias="tx_input">res/icons/tx_input.png</file>
         <file alias="tx_output">res/icons/tx_output.png</file>
         <file alias="tx_inout">res/icons/tx_inout.png</file>

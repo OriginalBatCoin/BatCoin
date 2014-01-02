@@ -1,24 +1,26 @@
-BatCoin, a p2p crypto coin based on scrypt PoW, provides random coins per block. Initially it generates a random number of coins, between 256 coins and 65536 (256*256) coins, per block. In addition, it generates randomly superblocks on per hourly basis (131072 coins per block), semi-daily (262144 coins per block) and daily super lotto (528244 coins per block). BatCoin is a great cyber crypto coin for games. BatCoin has a total of about 18,302,526,336 coins. It is a descendant of Litecoin with random block features. 
+BatCoin (BAT) - a 'faster' version of Litecoin which also uses scrypt
+as a proof of work scheme and is intended for microtransactions.
+ - 15 seconds block targets: beat that MinCoin! ;)
+ - 42 007 680 total coins
+ - no subsidy within the first 3 days and after approximately 5 years;
+    in between: 4 coins per generated block
+ - difficulty retargets every 0.35 days
+ - currently peers are looked up over IRC only
+ - currently no block checkpoints are in the code (but could be easily
+   added)
+Other than that, this coin is exactly like Litecoin and should by no
+means be used as a real cryptocurrency. All of the coin parameters
+are chosen arbitrarily or at most with 'fairness' towards everyone in mind.
 
-Features:
-	- 30 seconds block time
-	- Difficulty retargets every block
-	- Initially random 256 - 65536 (256*256) coins per block
-	- Hourly, semi-daily and daily superblocks:
-		- Hourly lotto 131072 coins per block
-		- Semi-daily lotto 262144 coins per block
-		- Daily lotto 1048576 coins per block
-	- 4 confirmations for transaction. This zap-fast 2 minutes confirmation time
-	- 60 confirmations for minted blocks
-	- Total coins will be around 18,406,979,840 coins
-	- support transaction message	
-	- The payout will be halved every 3 months. The minimum payout per block will be 1 coin.
+So actually, this 'new' coin exists for the following reasons:
+ - BAT proves that really anyone(!) can start a Litecoin/Bitcoin based currency
+    (just look at the changes I applied to the original Litecoin source,
+     for genesis block generation look at main.cpp)
+ - allows me to experiment with coin parameters (in a private network)
 
-	- The default ports are 
-		- Connect: 16383 
-		- RPC: 16384 
-
-
+Finally, I only tested the command line server/tool 'BatCoin' for the
+first 30 blocks. Credits go to the original authors/communities that
+created Bitcoin and Litecoin.
 
 Development process
 ===================
@@ -33,7 +35,7 @@ or are controversial.
 
 The master branch is regularly built and tested, but is not guaranteed
 to be completely stable. Tags are regularly created to indicate new
-official, stable release versions of Elephant coin.
+official, stable release versions of Litecoin.
 
 Feature branches are created when there are major new features being
 worked on by several people.
@@ -46,4 +48,4 @@ in this manner will have their corresponding issue labeled 'stagnant'.
 
 Issues with no commits will be given a similar warning, and closed after
 15 days from their last activity. Issues closed in this manner will be 
-labeled 'stale'. 
+labeled 'stale'.

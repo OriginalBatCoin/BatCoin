@@ -1,7 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 Litecoin Developers
-// Copyright (c) 2013 BatCoin Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -222,21 +221,21 @@ void ThreadIRCSeed2(void* parg)
 
     while (!fShutdown)
     {
-        CService addrConnect("irc.lfnet.org", 6667, true);
+        CService addrConnect("92.243.23.21", 6667); // irc.lfnet.org
+
+        CService addrIRC("irc.lfnet.org", 6667, true);
+        if (addrIRC.IsValid())
+            addrConnect = addrIRC;
 
         SOCKET hSocket;
         if (!ConnectSocket(addrConnect, hSocket))
         {
-			addrConnect = CService("pelican.heliacal.net", 6667, true);
-			if (!ConnectSocket(addrConnect, hSocket))
-			{
-				printf("IRC connect failed\n");
-				nErrorWait = nErrorWait * 11 / 10;
-				if (Wait(nErrorWait += 60))
-					continue;
-				else
-					return;
-			}
+            printf("IRC connect failed\n");
+            nErrorWait = nErrorWait * 11 / 10;
+            if (Wait(nErrorWait += 60))
+                continue;
+            else
+                return;
         }
 
         if (!RecvUntil(hSocket, "Found your hostname", "using your IP address instead", "Couldn't look up your hostname", "ignoring hostname"))
@@ -300,7 +299,7 @@ void ThreadIRCSeed2(void* parg)
         } else {
             // randomly join #BatCoin00-#BatCoin99
             int channel_number = GetRandInt(100);
-            channel_number = 0; // BatCoin: for now, just use one channel
+            channel_number = 0; // Litecoin: for now, just use one channel
             Send(hSocket, strprintf("JOIN #BatCoin%02d\r", channel_number).c_str());
             Send(hSocket, strprintf("WHO #BatCoin%02d\r", channel_number).c_str());
         }

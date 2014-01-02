@@ -15,7 +15,7 @@ class QAbstractItemView;
 QT_END_NAMESPACE
 class SendCoinsRecipient;
 
-/** Utility functions used by the BatCoin Qt UI.
+/** Utility functions used by the BatCoin-qt UI.
  */
 namespace GUIUtil
 {
@@ -23,7 +23,7 @@ namespace GUIUtil
     QString dateTimeStr(const QDateTime &datetime);
     QString dateTimeStr(qint64 nTime);
 
-    // Render BatCoin addresses in monospace font
+    // Render addresses in monospace font
     QFont bitcoinAddressFont();
 
     // Set up widgets for address and amounts
@@ -95,7 +95,7 @@ namespace GUIUtil
     bool GetStartOnSystemStartup();
     bool SetStartOnSystemStartup(bool fAutoStart);
 
-    /** Help message for BatCoin-Qt, shown with --help. */
+    /** Help message, shown with --help. */
     class HelpMessageBox : public QMessageBox
     {
         Q_OBJECT

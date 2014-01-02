@@ -59,8 +59,7 @@ ifdef RELEASE
 # Compile for maximum compatibility and smallest size.
 # This requires that dependencies are compiled
 # the same way.
-#CFLAGS = -mmacosx-version-min=10.5 -arch i386 -O3
-CFLAGS = -mmacosx-version-min=10.5 -arch x86_64 -O3
+CFLAGS = -mmacosx-version-min=10.5 -arch i386 -O3
 else
 CFLAGS = -g
 endif
@@ -104,7 +103,7 @@ else
 endif
 endif
 
-all: BatCoind
+all: dogecoind
 
 # auto-generated dependencies:
 -include obj/*.P
@@ -129,7 +128,7 @@ obj/%.o: %.cpp
 	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 	  rm -f $(@:%.o=%.d)
 
-BatCoind: $(OBJS:obj/%=obj/%)
+dogecoind: $(OBJS:obj/%=obj/%)
 	$(CXX) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
@@ -141,11 +140,11 @@ obj-test/%.o: test/%.cpp
 	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 	  rm -f $(@:%.o=%.d)
 
-test_BatCoin: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
+test_dogecoin: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	$(CXX) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS) $(TESTLIBS)
 
 clean:
-	-rm -f BatCoind test_BatCoin
+	-rm -f dogecoind test_dogecoin
 	-rm -f obj/*.o
 	-rm -f obj-test/*.o
 	-rm -f obj/*.P

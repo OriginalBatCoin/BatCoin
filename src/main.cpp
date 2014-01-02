@@ -1,7 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 Litecoin Developers
-// Copyright (c) 2013 BatCoin Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,9 +12,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
- 
+
 using namespace std;
 using namespace boost;
 
@@ -32,9 +29,8 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-
-uint256 hashGenesisBlock("0x0319836c6a164863145587fe05aec40ec77060770394ab244a35dff8163cfd5a");
-static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // BatCoin: starting difficulty is 1 / 2^12
+uint256 hashGenesisBlock("0x7dd614740b2a5c6a964bf06a9aad267854ae0f1094df211edbc4a6398671e145");
+static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // starting difficulty is 1 / 2^12
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 CBigNum bnBestChainWork = 0;
@@ -276,10 +272,6 @@ bool CTransaction::IsStandard() const
 {
     if (nVersion > CTransaction::CURRENT_VERSION)
         return false;
-
-	// Disallow large transaction comments
-	if (strTxComment.length() > MAX_TX_COMMENT_LEN)
-		return false;
 
     BOOST_FOREACH(const CTxIn& txin, vin)
     {
@@ -706,7 +698,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!IsCoinBase())
         return 0;
-    return max(0, (COINBASE_MATURITY+20) - GetDepthInMainChain());
+    return max(0, (COINBASE_MATURITY+10) - GetDepthInMainChain());
 }
 
 
@@ -833,25 +825,17 @@ uint256 static GetOrphanRoot(const CBlock* pblock)
         pblock = mapOrphanBlocks[pblock->hashPrevBlock];
     return pblock->GetHash();
 }
-
-
-int static generateMTRandom(unsigned int s, int range)
-{
-	random::mt19937 gen(s);
-    random::uniform_int_distribution<> dist(0, range);
-    return dist(gen);
-}
-
 static const int64 nMinSubsidy = 1 * COIN;
-
-int64 static GetBlockValue(int nHeight, int64 nFees, uint256 prevHash)
+int64 static GetBlockValue(int nHeight, int64 nFees)
 {
-	int64 nSubsidy = 60000 * COIN; // batCoin base form
-	std::string cseed_str = prevHash.ToString().substr(12,7);
-	const char* cseed = cseed_str.c_str();
-	long seed = hex2long(cseed);
-	int rand = generateMTRandom(seed, 960);//     random seed
-	if(nHeight == 1)
+int64 nSubsidy = 60000 * COIN; // batCoin base form
+	//std::string cseed_str = prevHash.ToString().substr(12,7);
+	//const char* cseed = cseed_str.c_str();
+	//long seed = hex2long(cseed);
+	srand(time(NULL));
+	int ourran = rand() % 960;
+	//int rand = generateMTRandom(seed, 960;//     random seed
+	if(nHeight == 2)
 	{
 		nSubsidy = 1000000 * 10; //first block
 	}
@@ -866,13 +850,13 @@ int64 static GetBlockValue(int nHeight, int64 nFees, uint256 prevHash)
 	{
 		nSubsidy /= 2; //halving
 	}
-	// printf(“What is bat was one of us?,” );
+	// printf(‚ÄúWhat is bat was one of us?,‚Äù );
 	
-		if(rand % 4 == 0){
-			if(rand < 199 && rand < 225){ //6 times a day
+		if(ourran % 4 == 0){
+			if(ourran < 199 && ourran < 225){ //6 times a day
 				nSubsidy *= 4; //Happy Guano Block!! 
 			}
-			else if(rand == 4){ //mega blocks
+			else if(ourran == 4){ //mega blocks
 				nSubsidy *= 10;
 			}
 
@@ -883,11 +867,14 @@ int64 static GetBlockValue(int nHeight, int64 nFees, uint256 prevHash)
 		}
 		return nSubsidy + nFees;
 }
-
-
-static const int64 nTargetTimespan = 60 * 60;// BatCoin: 1 hour 
-static const int64 nTargetSpacing = 90;// BatCoin: 90 sec
+static const int64 nTargetTimespan = 60 * 60; // BatCoin: 1 hour
+static const int64 nTargetSpacing = 1.5 * 60; // BatCoin: 90 seconds
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
+
+// Thanks: Balthazar for suggesting the following fix
+// https://bitcointalk.org/index.php?topic=182430.msg1904506#msg1904506
+static const int64 nReTargetHistoryFact = 4; // look at 4 times the retarget
+                                             // interval into the block history
 
 //
 // minimum amount of work that could possibly be required nTime after
@@ -914,7 +901,6 @@ unsigned int ComputeMinWork(unsigned int nBase, int64 nTime)
     return bnResult.GetCompact();
 }
 
-// retarget every block
 unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlock *pblock)
 {
     unsigned int nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
@@ -923,34 +909,73 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     if (pindexLast == NULL)
         return nProofOfWorkLimit;
 
-	// 1st block
-	if(pindexLast->pprev == NULL)
-		return nProofOfWorkLimit;
+    // Only change once per interval
+    if ((pindexLast->nHeight+1) % nInterval != 0)
+    {
+        // Special difficulty rule for testnet:
+        if (fTestNet)
+        {
+            // If the new block's timestamp is more than 2* 10 minutes
+            // then allow mining of a min-difficulty block.
+            if (pblock->nTime > pindexLast->nTime + nTargetSpacing*2)
+                return nProofOfWorkLimit;
+            else
+            {
+                // Return the last non-special-min-difficulty-rules-block
+                const CBlockIndex* pindex = pindexLast;
+                while (pindex->pprev && pindex->nHeight % nInterval != 0 && pindex->nBits == nProofOfWorkLimit)
+                    pindex = pindex->pprev;
+                return pindex->nBits;
+            }
+        }
 
-	// 2nd block
-	if(pindexLast->pprev->pprev == NULL)
-		return nProofOfWorkLimit;
+        return pindexLast->nBits;
+    }
 
-	const CBlockIndex* pindexFirst = pindexLast->pprev;
-	int64 nActualSpacing = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
+    // Litecoin: This fixes an issue where a 51% attack can change difficulty at will.
+    // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
+    int blockstogoback = nInterval-1;
+    if ((pindexLast->nHeight+1) != nInterval)
+        blockstogoback = nInterval;
+    if (pindexLast->nHeight > COINFIX1_BLOCK) {
+        blockstogoback = nReTargetHistoryFact * nInterval;
+    }
 
-	// limit the adjustment
-	if (nActualSpacing < nTargetSpacing/16)
-		nActualSpacing = nTargetSpacing/16;
-	if (nActualSpacing > nTargetSpacing*16)
-		nActualSpacing = nTargetSpacing*16; 
+    // Go back by what we want to be nReTargetHistoryFact*nInterval blocks
+    const CBlockIndex* pindexFirst = pindexLast;
+    for (int i = 0; pindexFirst && i < blockstogoback; i++)
+        pindexFirst = pindexFirst->pprev;
+    assert(pindexFirst);
+
+    // Limit adjustment step
+    int64 nActualTimespan = 0;
+    if (pindexLast->nHeight > COINFIX1_BLOCK)
+        // obtain average actual timespan
+        nActualTimespan = (pindexLast->GetBlockTime() - pindexFirst->GetBlockTime())/nReTargetHistoryFact;
+    else
+        nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
+    printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
+    if (nActualTimespan < nTargetTimespan/4)
+        nActualTimespan = nTargetTimespan/4;
+    if (nActualTimespan > nTargetTimespan*4)
+        nActualTimespan = nTargetTimespan*4;
 
     // Retarget
     CBigNum bnNew;
     bnNew.SetCompact(pindexLast->nBits);
-
-	bnNew *= ((nInterval - 1) * nTargetSpacing + 2 * nActualSpacing);
-	bnNew /= ((nInterval + 1) * nTargetSpacing);
+    bnNew *= nActualTimespan;
+    bnNew /= nTargetTimespan;
 
     if (bnNew > bnProofOfWorkLimit)
         bnNew = bnProofOfWorkLimit;
 
-	return bnNew.GetCompact();
+    /// debug print
+    printf("GetNextWorkRequired RETARGET\n");
+    printf("nTargetTimespan = %"PRI64d"    nActualTimespan = %"PRI64d"\n", nTargetTimespan, nActualTimespan);
+    printf("Before: %08x  %s\n", pindexLast->nBits, CBigNum().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
+    printf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
+
+    return bnNew.GetCompact();
 }
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits)
@@ -1017,6 +1042,15 @@ void CBlock::UpdateTime(const CBlockIndex* pindexPrev)
     if (fTestNet)
         nBits = GetNextWorkRequired(pindexPrev, this);
 }
+
+
+
+
+
+
+
+
+
 
 
 bool CTransaction::DisconnectInputs(CTxDB& txdb)
@@ -1415,14 +1449,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex)
             return error("ConnectBlock() : UpdateTxIndex failed");
     }
 
-	uint256 prevHash = 0;
-	if(pindex->pprev)
-	{
-		prevHash = pindex->pprev->GetBlockHash();
-		// printf("==> Got prevHash = %s\n", prevHash.ToString().c_str());
-	}
-
-    if (vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees, prevHash))
+    if (vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees))
         return false;
 
     // Update block index on disk without changing it in memory.
@@ -1645,7 +1672,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     nTimeBestReceived = GetTime();
     nTransactionsUpdated++;
     printf("SetBestChain: new best=%s  height=%d  work=%s  date=%s\n",
-      hashBestChain.ToString().c_str(), nBestHeight, bnBestChainWork.ToString().c_str(),
+      hashBestChain.ToString().substr(0,20).c_str(), nBestHeight, bnBestChainWork.ToString().c_str(),
       DateTimeStrFormat("%x %H:%M:%S", pindexBest->GetBlockTime()).c_str());
 
     // Check the version of the last 100 blocks to see if we need to upgrade:
@@ -1916,6 +1943,11 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
 
 
 
+
+
+
+
+
 bool CheckDiskSpace(uint64 nAdditionalBytes)
 {
     uint64 nFreeBytesAvailable = filesystem::space(GetDataDir()).available;
@@ -1933,7 +1965,6 @@ bool CheckDiskSpace(uint64 nAdditionalBytes)
     }
     return true;
 }
-
 
 FILE* OpenBlockFile(unsigned int nFile, unsigned int nBlockPos, const char* pszMode)
 {
@@ -1984,7 +2015,7 @@ bool LoadBlockIndex(bool fAllowNew)
         pchMessageStart[1] = 0xc0;
         pchMessageStart[2] = 0xb8;
         pchMessageStart[3] = 0xdb;
-        hashGenesisBlock = uint256("0x0319836c6a164863145587fe05aec40ec77060770394ab244a35dff8163cfd5a");
+        hashGenesisBlock = uint256("0x7dd614740b2a5c6a964bf06a9aad267854ae0f1094df211edbc4a6398671e145");
     }
 
     //
@@ -2016,7 +2047,7 @@ bool LoadBlockIndex(bool fAllowNew)
 	// vMerkleTree: 5a2e19825b
         
         // Genesis block
-        const char* pszTimestamp = "batman first appeared in 1939,and since than he appeared in more than 100,000 issues";
+        const char* pszTimestamp = "WikiFlicky, 1939 - The first appearance of batman, since than he appeared in more than 100,000 until today: 02/Jan/2014";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -2028,13 +2059,13 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1388609578;
+        block.nTime    = 1388680824;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 2085320002;
+        block.nNonce   = 2091101170;
 
         if (fTestNet)
         {
-            block.nTime    = 1388609578;
+            block.nTime    = 1388680824;
             block.nNonce   = 386402991;
         }
 
@@ -2042,7 +2073,7 @@ bool LoadBlockIndex(bool fAllowNew)
         printf("%s\n", block.GetHash().ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x8006c79584eb9fc27155173e6a454049dd439920c746b6f29c55743d1e6db49e"));
+        assert(block.hashMerkleRoot == uint256("0xa07be15bae18896eb88a0e79491376b3e85af630d70503118bc74fe0f1d84dc8"));
 
         // If genesis block hash does not match, then generate new genesis hash.
         if (false && block.GetHash() != hashGenesisBlock)
@@ -2089,6 +2120,7 @@ bool LoadBlockIndex(bool fAllowNew)
 
     return true;
 }
+
 
 
 void PrintBlockTree()
@@ -2387,7 +2419,7 @@ bool static AlreadyHave(CTxDB& txdb, const CInv& inv)
 // The message start string is designed to be unlikely to occur in normal data.
 // The characters are rarely used upper ascii, not valid as UTF-8, and produce
 // a large 4-byte int at any alignment.
-unsigned char pchMessageStart[4] = { 0xa5, 0xfd, 0xb6, 0xc1 }; 
+unsigned char pchMessageStart[4] = { 0xfc, 0xd9, 0xb7, 0xdd };
 
 
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
@@ -3475,7 +3507,7 @@ CBlock* CreateNewBlock(CReserveKey& reservekey)
                 continue;
 
             // Transaction fee required depends on block size
-            // BatCoind: Reduce the exempted free transactions to 500 bytes (from Bitcoin's 3000 bytes)
+            // Litecoind: Reduce the exempted free transactions to 500 bytes (from Bitcoin's 3000 bytes)
             bool fAllowFree = (nBlockSize + nTxSize < 1500 || CTransaction::AllowFree(dPriority));
             int64 nMinFee = tx.GetMinFee(nBlockSize, fAllowFree, GMF_BLOCK);
 
@@ -3528,8 +3560,7 @@ CBlock* CreateNewBlock(CReserveKey& reservekey)
         printf("CreateNewBlock(): total size %lu\n", nBlockSize);
 
     }
-    // pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
-    pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees, pindexPrev->GetBlockHash());
+    pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
 
     // Fill in header
     pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
@@ -3617,7 +3648,6 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     printf("BitcoinMiner:\n");
     printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
-    printf("Hash = %s\n", pblock->GetHash().ToString().c_str());
     printf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue).c_str());
 
     // Found a solution

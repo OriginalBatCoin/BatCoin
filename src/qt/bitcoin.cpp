@@ -170,11 +170,11 @@ int main(int argc, char *argv[])
     // Application identification (must be set before OptionsModel is initialized,
     // as it is used to locate QSettings)
     app.setOrganizationName("BatCoin");
-    app.setOrganizationDomain("BatCoin-noexist-domain.org");
+    app.setOrganizationDomain("we-have-no-domain-yet.nex");
     if(GetBoolArg("-testnet")) // Separate UI settings for testnet
-        app.setApplicationName("BatCoin-Qt-testnet");
+        app.setApplicationName("BatCoin-qt-testnet");
     else
-        app.setApplicationName("BatCoin-Qt");
+        app.setApplicationName("BatCoin-qt");
 
     // ... then GUI settings:
     OptionsModel optionsModel;
