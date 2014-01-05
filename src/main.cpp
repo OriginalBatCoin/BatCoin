@@ -29,7 +29,7 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0x7dd614740b2a5c6a964bf06a9aad267854ae0f1094df211edbc4a6398671e145");
+uint256 hashGenesisBlock("0xac3898223785b4264c369101be7830892479b1a85439cb99cc86d13dc0730e1f");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // starting difficulty is 1 / 2^12
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
@@ -837,7 +837,7 @@ int64 nSubsidy = 60000 * COIN; // batCoin base form
 	//int rand = generateMTRandom(seed, 960;//     random seed
 	if(nHeight == 2)
 	{
-		nSubsidy = 1000000 * 10; //first block
+		nSubsidy = 1000000 * 10; //first block = 1 coin
 	}
 	else if(nHeight < 1500)
 	{
@@ -2015,7 +2015,7 @@ bool LoadBlockIndex(bool fAllowNew)
         pchMessageStart[1] = 0xc0;
         pchMessageStart[2] = 0xb8;
         pchMessageStart[3] = 0xdb;
-        hashGenesisBlock = uint256("0x7dd614740b2a5c6a964bf06a9aad267854ae0f1094df211edbc4a6398671e145");
+        hashGenesisBlock = uint256("0x");
     }
 
     //
@@ -2047,7 +2047,7 @@ bool LoadBlockIndex(bool fAllowNew)
 	// vMerkleTree: 5a2e19825b
         
         // Genesis block
-        const char* pszTimestamp = "WikiFlicky, 1939 - The first appearance of batman, since than he appeared in more than 100,000 until today: 02/Jan/2014";
+        const char* pszTimestamp = "WikiFlicky pooow, 1939 - The first appearance of batman, since than he appeared in more than 100,000 until today: 02/Jan/2014";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -2059,9 +2059,9 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1388680824;
+        block.nTime    = 1388879932;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 2091101170;
+        block.nNonce   = 2094101170;
 
         if (fTestNet)
         {
@@ -2073,10 +2073,10 @@ bool LoadBlockIndex(bool fAllowNew)
         printf("%s\n", block.GetHash().ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0xa07be15bae18896eb88a0e79491376b3e85af630d70503118bc74fe0f1d84dc8"));
+        assert(block.hashMerkleRoot == uint256("0x3e3e0fc2c0f17485f273c0b654cc5365e486c5fedad31367cfcfd5a6e87d4a13"));
 
         // If genesis block hash does not match, then generate new genesis hash.
-        if (false && block.GetHash() != hashGenesisBlock)
+        if (true && block.GetHash() != hashGenesisBlock)
         {
             printf("Searching for genesis block...\n");
             // This will figure out a valid hash and Nonce if you're

@@ -32,7 +32,7 @@ public:
     {
         if (TransactionDescDialog->objectName().isEmpty())
             TransactionDescDialog->setObjectName(QString::fromUtf8("TransactionDescDialog"));
-        TransactionDescDialog->resize(620, 300);
+        TransactionDescDialog->resize(620, 250);
         verticalLayout = new QVBoxLayout(TransactionDescDialog);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         detailText = new QTextEdit(TransactionDescDialog);

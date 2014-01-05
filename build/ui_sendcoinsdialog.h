@@ -22,7 +22,6 @@
 #include <QtGui/QSpacerItem>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
-#include <qvalidatedlineedit.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -30,9 +29,6 @@ class Ui_SendCoinsDialog
 {
 public:
     QVBoxLayout *verticalLayout;
-    QHBoxLayout *horizontalLayoutTxComment;
-    QLabel *labelTxComment;
-    QValidatedLineEdit *editTxComment;
     QScrollArea *scrollArea;
     QWidget *scrollAreaWidgetContents;
     QVBoxLayout *verticalLayout_2;
@@ -54,24 +50,6 @@ public:
         SendCoinsDialog->resize(686, 217);
         verticalLayout = new QVBoxLayout(SendCoinsDialog);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        horizontalLayoutTxComment = new QHBoxLayout();
-        horizontalLayoutTxComment->setSpacing(0);
-        horizontalLayoutTxComment->setObjectName(QString::fromUtf8("horizontalLayoutTxComment"));
-        labelTxComment = new QLabel(SendCoinsDialog);
-        labelTxComment->setObjectName(QString::fromUtf8("labelTxComment"));
-        labelTxComment->setAlignment(Qt::AlignLeft|Qt::AlignTrailing|Qt::AlignVCenter);
-
-        horizontalLayoutTxComment->addWidget(labelTxComment);
-
-        editTxComment = new QValidatedLineEdit(SendCoinsDialog);
-        editTxComment->setObjectName(QString::fromUtf8("editTxComment"));
-        editTxComment->setEnabled(true);
-
-        horizontalLayoutTxComment->addWidget(editTxComment);
-
-
-        verticalLayout->addLayout(horizontalLayoutTxComment);
-
         scrollArea = new QScrollArea(SendCoinsDialog);
         scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
         scrollArea->setWidgetResizable(true);
@@ -156,9 +134,6 @@ public:
 
         verticalLayout->addLayout(horizontalLayout);
 
-#ifndef QT_NO_SHORTCUT
-        labelTxComment->setBuddy(editTxComment);
-#endif // QT_NO_SHORTCUT
 
         retranslateUi(SendCoinsDialog);
 
@@ -168,10 +143,6 @@ public:
     void retranslateUi(QDialog *SendCoinsDialog)
     {
         SendCoinsDialog->setWindowTitle(QApplication::translate("SendCoinsDialog", "Send Coins", 0, QApplication::UnicodeUTF8));
-        labelTxComment->setText(QApplication::translate("SendCoinsDialog", "Transaction &comment: ", 0, QApplication::UnicodeUTF8));
-#ifndef QT_NO_TOOLTIP
-        editTxComment->setToolTip(QApplication::translate("SendCoinsDialog", "Enter a transaction comment (Note: this information is public)", 0, QApplication::UnicodeUTF8));
-#endif // QT_NO_TOOLTIP
 #ifndef QT_NO_TOOLTIP
         addButton->setToolTip(QApplication::translate("SendCoinsDialog", "Send to multiple recipients at once", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP

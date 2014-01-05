@@ -42,7 +42,7 @@ public:
     {
         if (AboutDialog->objectName().isEmpty())
             AboutDialog->setObjectName(QString::fromUtf8("AboutDialog"));
-        AboutDialog->resize(593, 380);
+        AboutDialog->resize(593, 331);
         horizontalLayout_2 = new QHBoxLayout(AboutDialog);
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
         label_4 = new QLabel(AboutDialog);
@@ -124,7 +124,6 @@ public:
         label_2->setText(QApplication::translate("AboutDialog", "\n"
 "          Copyright \302\251 2009-2012 Bitcoin Developers\n"
 "          Copyright \302\251 2011-2012 Litecoin Developers\n"
-"          Copyright \302\251 2013 BatCoin Developers\n"
 "\n"
 "          This is experimental software.\n"
 "\n"
@@ -132,7 +131,7 @@ public:
 "\n"
 "          This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/) and cryptographic software written by Eric Young (eay@cryptsoft.com) and UPnP software written by Thomas Bernard.\n"
 "\n"
-"          Offical website: none\n"
+"          Offical forum post: -- todo: update --\n"
 "        ", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
