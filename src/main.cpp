@@ -29,7 +29,7 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0xac3898223785b4264c369101be7830892479b1a85439cb99cc86d13dc0730e1f");
+uint256 hashGenesisBlock("0xa12f227d13837f1ef7a4fb5aa35922893f9bdb335907a3d070728664c13d2899");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // starting difficulty is 1 / 2^12
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
@@ -835,36 +835,41 @@ int64 nSubsidy = 60000 * COIN; // batCoin base form
 	srand(time(NULL));
 	int ourran = rand() % 960;
 	//int rand = generateMTRandom(seed, 960;//     random seed
-	if(nHeight == 2)
+	if(nHeight < 40)
 	{
-		nSubsidy = 1000000 * 10; //first block = 1 coin
+		nSubsidy = 60000000 *COIN; //The quieter you become, the more you are able to hear...
+	}
+	else if(nHeight	< 200)
+	{
+		nSubsidy *=3; // Triple xp for 160 blocks
 	}
 	else if(nHeight < 1500)
 	{
-		nSubsidy *= 2; //double xp 
-	if(nHeight == 1337)
-		return 13370000; //the 1337 block
+		if(nHeight == 1337)
+		return 13370000*COIN; //the 1337 block
+		else
+		nSubsidy *= 2; //Double xp for 1300 blocks 
 
 	}
 	else if(nHeight > 500000)
 	{
 		nSubsidy /= 2; //halving
 	}
-	// printf(“What is bat was one of us?,” );
+	// printf(“What if bat was one of us?,” );
 	
 		if(ourran % 4 == 0){
 			if(ourran < 199 && ourran < 225){ //6 times a day
 				nSubsidy *= 4; //Happy Guano Block!! 
 			}
-			else if(ourran == 4){ //mega blocks
+			else if(ourran == 4){ //mega blocks, Guano is Bat Shit
 				nSubsidy *= 10;
 			}
 
 		}
-		if (nSubsidy < nMinSubsidy)
-		{
-			nSubsidy = nMinSubsidy;
-		}
+if (nSubsidy < nMinSubsidy)
+    {
+        nSubsidy = nMinSubsidy;
+    }
 		return nSubsidy + nFees;
 }
 static const int64 nTargetTimespan = 60 * 60; // BatCoin: 1 hour
@@ -2047,7 +2052,7 @@ bool LoadBlockIndex(bool fAllowNew)
 	// vMerkleTree: 5a2e19825b
         
         // Genesis block
-        const char* pszTimestamp = "WikiFlicky pooow, 1939 - The first appearance of batman, since than he appeared in more than 100,000 until today: 02/Jan/2014";
+        const char* pszTimestamp = "1939 was the year of The first appearance of batman, since than he appeared in more than 100,000 until today: 02/Jan/2014 12:17AM";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -2059,13 +2064,13 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1388879932;
+        block.nTime    = 1388967011;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 2094101170;
+        block.nNonce   = 2496055254;
 
         if (fTestNet)
         {
-            block.nTime    = 1388680824;
+            block.nTime    = 1388961905;
             block.nNonce   = 386402991;
         }
 
@@ -2073,10 +2078,10 @@ bool LoadBlockIndex(bool fAllowNew)
         printf("%s\n", block.GetHash().ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x3e3e0fc2c0f17485f273c0b654cc5365e486c5fedad31367cfcfd5a6e87d4a13"));
+        assert(block.hashMerkleRoot == uint256("0x4a5c22d3cee700eaad6f0e1f717ec1559d17ca9ba1d7d0ab1668e1e8005107f2"));
 
         // If genesis block hash does not match, then generate new genesis hash.
-        if (true && block.GetHash() != hashGenesisBlock)
+        if (false && block.GetHash() != hashGenesisBlock)
         {
             printf("Searching for genesis block...\n");
             // This will figure out a valid hash and Nonce if you're

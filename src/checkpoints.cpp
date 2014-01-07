@@ -24,12 +24,12 @@ namespace Checkpoints
     //
     
    static MapCheckpoints mapCheckpoints =
-        boost::assign::map_list_of  //TODO: add more checkpoints
-        (         0, uint256("0xac3898223785b4264c369101be7830892479b1a85439cb99cc86d13dc0730e1f"))
-       (         8, uint256("0x8fe4b3929b0343b796bfb59b0995dc878b8b3ef67ddf28b0c62f3834c5700692"))
-      (     120, uint256("0xebb1546c750121ad4ba77aa809417de36f4fa32c9fb37d5cbe68e9b2ce27feba"))
-        (     210, uint256("0x578f861d48ead774ebba64f1798c2701ccfc06c2c74f8570ec79a84a9d798e20"))
-       // (     1773, uint256("0x"))
+   	  boost::assign::map_list_of  //TODO: add more checkpoints
+        (         0, uint256("0xa12f227d13837f1ef7a4fb5aa35922893f9bdb335907a3d070728664c13d2899"))
+       (         2, uint256("0xdad976aa92fc3541e31cf541fed0dda2125e4b4adb4c8de04dad96c97229dad8"))
+      (     8, uint256("0xbeb761843385c06afb3270735755bbb649ecd754c7cc4d813cd1aaa30dfe0fc2"))
+        (     30, uint256("0x2ad37a5b3a89992ae485072738d7a5d4cfbe94deb5af4459ea90650d76a62b19"))
+        (     41, uint256("0x5c53d4a7f1a3ad4fa7dae52648c6f994cef2f7969c6b3ee135855ee0f039d262"))
        ;
 
     bool CheckBlock(int nHeight, const uint256& hash)
@@ -44,7 +44,7 @@ namespace Checkpoints
     int GetTotalBlocksEstimate()
     {
         if (fTestNet) return 0;
-    	 return mapCheckpoints.rbegin()->first;
+    	 return  mapCheckpoints.rbegin()->first;
     }
 
     CBlockIndex* GetLastCheckpoint(const std::map<uint256, CBlockIndex*>& mapBlockIndex)
