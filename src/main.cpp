@@ -841,9 +841,8 @@ int64 nSubsidy = 60000 * COIN; // batCoin base form
 	std::string cseed_str = prevHash.ToString().substr(12,7);
 	const char* cseed = cseed_str.c_str();
 	long seed = hex2long(cseed);
-	srand(seed);
-	int ourran = rand() % 960;
-	//int rand = generateMTRandom(seed, 960;//     random seed
+
+	int ourran = generateMTRandom(seed, 960);//     random seed
 	if(nHeight < 40)
 	{
 		nSubsidy = 60000000 *COIN; //The quieter you become, the more you are able to hear...
