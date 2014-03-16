@@ -1,5 +1,5 @@
 ---
-name: "litecoin-deps"
+name: "bitcoin-scrypt-deps"
 suites:
 - "lucid"
 architectures:
@@ -10,6 +10,8 @@ packages:
 - "zip"
 - "faketime"
 - "wine"
+- "psmisc"
+
 reference_datetime: "2011-01-30 00:00:00"
 remotes: []
 files:
@@ -62,7 +64,7 @@ script: |
   make $MAKEOPTS
   cd ..
   #
-  zip -r $OUTDIR/litecoin-deps-0.0.4.zip \
+  zip -r $OUTDIR/bitcoin-deps-1.2.0.zip \
     $(ls qrencode-*/{qrencode.h,.libs/libqrencode.{,l}a} | sort) \
     $(ls db-*/build_unix/{libdb_cxx.a,db.h,db_cxx.h,libdb.a,.libs/libdb_cxx-?.?.a} | sort) \
     $(find openssl-* -name '*.a' -o -name '*.h' | sort) \
