@@ -1,5 +1,7 @@
 About BatCoin
- is a type of decentralized currency.
+
+	
+ Batcoin is a type of decentralized currency.
  Not minted or endorsed by any nation, but by users across the globe.
 Anywhere there is internet, you can send or receive BatCoins.
 
