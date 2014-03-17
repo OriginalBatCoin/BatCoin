@@ -1,56 +1,16 @@
-What is Batcoin you ask?
+About BatCoin
+ is a type of decentralized currency.
+ Not minted or endorsed by any nation, but by users across the globe.
+Anywhere there is internet, you can send or receive BatCoins.
 
-Batcoin is a Scrypt-based coin
-
-Difficulty retarget time is 1 hour
-
-90 seconds block time
-
-60,000 BAT's per block
-
-Total of 91,000,000,000 BAT's ( which is the estimated Bruce Wayne's fortune as of 2013,God, thats one rich ass BAT
-
-6 Guano blocks a day will deliver X4 more coins, and a super Guano block X10 coins every 4 days.
-
-Special reward on block 1337 as a tribute to my l33t hacker nemesis  - The Calculator
-
-Guano is Bat Shit
-
-2% permine
-
-First 140 Blocks Are x3 payout
-
-after that 1300 blocks with x2 payout!
-
-don't miss the train!
-
-why premine?
-
-to pay my team, Robin - co-developer, Commissioner James Gordon-Design,NightWing-consulting
-
-to make huge giveaways
-
-to pay out bounties
-
-BatLinks:
-
-Website
-
-http://batcoin.info
-
-Facebook
-
-https://www.facebook.com/BatCoinCurrency
-
-Twitter
+BatCoins are mined by users at a set rate for decades into the future.
+You can get Megacoins for free by mining or trading for them on an exchange.
+http://www.batcoin.info
 
 
-BatClients:
 
-Windows Qt:
+Get Started
 
---will be ready until launch date--
 
-Mac Qt:
-
-++Ready to deploy on launch date++
+Batcoin is a global project without bounds, so everyone is welcome to join. Developers can join by coding locally then submitting a git pull request.
+https://bitcointalk.org/index.php?topic=400753
